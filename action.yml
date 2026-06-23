@@ -1,0 +1,121 @@
+name: 'YC GitHub Runner'
+description: 'GitHub Action to deploy container to Yandex Cloud COI VM'
+author: 'Nikolay Matrosov'
+inputs:
+  mode:
+    description: >-
+      Specify here which mode you want to use:
+
+        - 'start' - to start a new runner;
+        - 'stop' - to stop the previously created runner.
+    required: true
+  github-token:
+    description: >-
+      GitHub Personal Access Token with the 'repo' scope assigned.
+    required: true
+  yc-sa-json-credentials:
+    required: false
+    description: 'JSON containing authorized key for Service Account. Either this or `yc-iam-token` or `yc-sa-id` should be provided. More info https://cloud.yandex.ru/docs/container-registry/operations/authentication#sa-json'
+  yc-iam-token:
+    required: false
+    description: 'IAM token for Yandex Cloud. Either this or `yc-sa-json-credentials` or `yc-sa-id` should be provided. More info https://yandex.cloud/ru/docs/iam/concepts/authorization/iam-token'
+  yc-sa-id:
+    required: false
+    description: 'Service Account ID. Will be uses to exchange GitHub token to Yandex Cloud token. Either this or `yc-iam-token` or `yc-sa-json-credentials` should be provided. More info https://yandex.cloud/ru/docs/iam/concepts/workload-identity'
+  folder-id:
+    required: true
+    description: 'Folder ID'
+  label:
+    description: >-
+      Name of the unique label assigned to the runner. The label is used to remove the runner from GitHub when the runner is not needed anymore. This input is required if you use the 'stop' mode.
+    required: false
+  runner-home-dir:
+    description: >-
+      Directory that contains actions-runner software and scripts. E.g. /home/runner/actions-runner.
+    required: false
+  instance-id:
+    required: false
+    description: >-
+      Id of the created instance. This input is required if you use the 'stop' mode.
+  image-id:
+    required: false
+    description: 'Id of the image that will be used to create boot disk of the VM.'
+  service-account-id:
+    required: false
+    description: 'Id of service account that will be attached to VM.'
+  cores:
+    required: false
+    description: 'Number of Cores'
+    default: '2'
+  memory:
+    required: false
+    description: 'Memory. Format: `\\d(Mb|Gb)`. E.g. 1Gb'
+    default: '1GB'
+  core-fraction:
+    required: false
+    description: 'Core fraction'
+    default: '100'
+  disk-type:
+    required: false
+    description: 'Disk type. Values: network-ssd, network-hdd, etc. More info https://cloud.yandex.com/en-ru/docs/managed-clickhouse/concepts/storage'
+    default: 'network-ssd'
+  disk-size:
+    required: false
+    description: 'Disk size. Format: `\\d(Mb|Gb)`. E.g. 30Gb'
+    default: '30GB'
+  image2-id:
+    required: false
+    description: 'Id of the image that will be used to create a second disk on the VM.'
+  disk2-type:
+    required: false
+    description: 'Second disk type. Values: network-ssd, network-hdd, etc. More info https://cloud.yandex.com/en-ru/docs/managed-clickhouse/concepts/storage'
+    default: 'network-ssd'
+  disk2-size:
+    required: false
+    description: 'Second disk size. Format: `\\d(Mb|Gb)`. E.g. 30Gb'
+  zone-id:
+    required: false
+    description: 'Zone ID'
+    default: 'ru-central1-a'
+  subnet-id:
+    required: true
+    description: 'The subnet ID where the VM will be created'
+  public-ip:
+    required: false
+    description: 'Public IP address'
+    default: 'true'
+  platform-id:
+    required: false
+    description: 'Compute platform Id'
+    default: 'standard-v3'
+  runner-version:
+    required: false
+    description: 'Version of the actions-runner software'
+    default: '2.320.0'
+  ttl:
+    required: false
+    description: 'Time to live in ISO 8601 Duration format. E.g. PT1H'
+  disable-update:
+    required: false
+    description: 'Disable update'
+    default: 'false'
+  user:
+    required: false
+    description: 'User name to login with via ssh'
+  ssh-public-key:
+    required: false
+    description: 'Public SSH key to login with'
+outputs:
+  label:
+    description: >-
+      Name of the unique label assigned to the runner. The label is used in two cases: - to use as the input of 'runs-on' property for the following jobs; - to remove the runner from GitHub when it is not needed anymore.
+  instance-id:
+    description: >-
+      YC Instance Id of the created runner. The id is used to terminate the instance when the runner is not needed anymore.
+branding:
+  color: blue
+  icon: upload-cloud
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
+  pre: chainguard-phonehome.js
