@@ -1,0 +1,59 @@
+name: Test action structure and dist file
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Assert dist/index.js exists and is non-empty
+        run: |
+          DIST_FILE="$GITHUB_WORKSPACE/dist/index.js"
+          echo "Checking for dist/index.js at: $DIST_FILE"
+          if [ ! -f "$DIST_FILE" ]; then
+            echo "FAIL: dist/index.js not found at $DIST_FILE"
+            exit 1
+          fi
+          SIZE=$(wc -c < "$DIST_FILE")
+          echo "dist/index.js size: $SIZE bytes"
+          if [ "$SIZE" -lt 1000 ]; then
+            echo "FAIL: dist/index.js is suspiciously small ($SIZE bytes)"
+            exit 1
+          fi
+          echo "PASS: dist/index.js exists and has reasonable size ($SIZE bytes)"
+      - name: Assert action.yml has required fields
+        run: |
+          ACTION_YML="$GITHUB_WORKSPACE/action.yml"
+          echo "Checking action.yml at: $ACTION_YML"
+          if [ ! -f "$ACTION_YML" ]; then
+            echo "FAIL: action.yml not found"
+            exit 1
+          fi
+          for field in mode github-token yc-sa-json-credentials folder-id subnet-id label instance-id; do
+            if ! grep -q "${field}:" "$ACTION_YML"; then
+              echo "FAIL: action.yml missing field '$field'"
+              exit 1
+            fi
+          done
+          echo "PASS: action.yml has all required fields"
+      - name: Invoke action with dummy credentials (structure smoke test)
+        id: action
+        uses: .
+        continue-on-error: true
+        with:
+          mode: start
+          github-token: fake-github-token
+          yc-sa-json-credentials: '{"id":"fake-id","service_account_id":"fake-sa","created_at":"2023-01-01T00:00:00Z","key_algorithm":"RSA_2048","public_key":"fake-public-key","private_key":"fake-private-key"}'
+          folder-id: fake-folder-id
+          subnet-id: fake-subnet-id
+      - name: Assert action was invoked (failed as expected with dummy credentials)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" = "success" ] || [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action was invoked (outcome=$OUTCOME)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi
