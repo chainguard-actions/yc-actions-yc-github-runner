@@ -8,6 +8,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 
 | Version | Tag | Upstream commit |
 |---------|-----|-----------------|
+| v1.3.0 | [`v1.3.0`](https://github.com/chainguard-actions/yc-actions-yc-github-runner/tree/v1.3.0) | [`8d55ee9`](https://github.com/yc-actions/yc-github-runner/commit/8d55ee95d0519b9ef7216b0e7bf4c1d1bfa22235) |
 | v1.5.0 | [`v1.5.0`](https://github.com/chainguard-actions/yc-actions-yc-github-runner/tree/v1.5.0) | [`f554a72`](https://github.com/yc-actions/yc-github-runner/commit/f554a72cd57c322fb9f0ce71051f7d3cfe7179ce) |
 | v1.6.0 | [`v1.6.0`](https://github.com/chainguard-actions/yc-actions-yc-github-runner/tree/v1.6.0) | [`d09681e`](https://github.com/yc-actions/yc-github-runner/commit/d09681ecd8c3071df1635052cebc3ff6eb79d76c) |
 
