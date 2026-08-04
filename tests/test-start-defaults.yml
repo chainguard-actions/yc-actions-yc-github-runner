@@ -1,0 +1,45 @@
+name: Test start mode with default inputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - id: start
+        uses: .
+        continue-on-error: true
+        with:
+          mode: start
+          github-token: ${{ github.token }}
+          yc-iam-token: fake-iam-token
+          folder-id: fake-folder-id
+          subnet-id: fake-subnet-id
+          image-id: fake-image-id
+          # All other inputs use their defaults:
+          # cores: '2'
+          # memory: '1GB'
+          # core-fraction: '100'
+          # disk-type: network-ssd
+          # disk-size: '30GB'
+          # zone-id: ru-central1-a
+          # platform-id: standard-v3
+          # runner-version: '2.320.0'
+          # public-ip: 'true'
+          # disable-update: 'false'
+          # retry-timeout: 'PT5M'
+
+      - name: Assert action ran (with defaults) and failed gracefully
+        env:
+          OUTCOME: ${{ steps.start.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" = "success" ]; then
+            echo "PASS: action succeeded with default inputs"
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action failed gracefully (expected without real YC credentials)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi

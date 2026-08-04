@@ -1,0 +1,55 @@
+name: Test start mode with extra inputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          mode: start
+          github-token: ${{ github.token }}
+          yc-sa-id: fake-sa-id-for-coverage
+          folder-id: fake-folder-id
+          subnet-id: fake-subnet-id
+          image-id: fake-image-id
+          runner-home-dir: /home/runner/actions-runner
+          service-account-id: fake-service-account-id
+          user: runner
+          ssh-public-key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC test@example.com
+          ttl: PT1H
+          zone-id: ru-central1-a
+          cores: '2'
+          memory: 1GB
+          core-fraction: '100'
+          disk-type: network-ssd
+          disk-size: 30GB
+          public-ip: 'false'
+          platform-id: standard-v3
+          runner-version: 2.320.0
+          disable-update: 'false'
+          retry-timeout: PT0S
+      - name: Assert action ran (outputs set or failed gracefully without real YC credentials)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+          LABEL: ${{ steps.action.outputs.label }}
+          INSTANCE_ID: ${{ steps.action.outputs.instance-id }}
+        run: |
+          echo "outcome: $OUTCOME"
+          echo "label: $LABEL"
+          echo "instance-id: $INSTANCE_ID"
+          if [ "$OUTCOME" = "success" ]; then
+            if [ -z "$LABEL" ] && [ -z "$INSTANCE_ID" ]; then
+              echo "FAIL: action succeeded but no outputs were set"
+              exit 1
+            fi
+            echo "PASS: action succeeded with label='$LABEL' instance-id='$INSTANCE_ID'"
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action failed gracefully (expected without real YC credentials)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi

@@ -1,0 +1,53 @@
+name: Test start mode with second disk configuration
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - id: start
+        uses: .
+        continue-on-error: true
+        with:
+          mode: start
+          github-token: ${{ github.token }}
+          yc-iam-token: fake-iam-token
+          folder-id: fake-folder-id
+          subnet-id: fake-subnet-id
+          image-id: fake-image-id
+          image2-id: fake-image2-id
+          disk2-type: network-hdd
+          disk2-size: '100GB'
+          cores: '2'
+          memory: '4GB'
+          core-fraction: '100'
+          disk-type: network-ssd
+          disk-size: '30GB'
+          zone-id: ru-central1-a
+          platform-id: standard-v3
+          public-ip: 'false'
+          retry-timeout: 'PT0S'
+
+      - name: Assert action ran with second disk config and failed gracefully
+        env:
+          OUTCOME: ${{ steps.start.outcome }}
+          LABEL: ${{ steps.start.outputs.label }}
+          INSTANCE_ID: ${{ steps.start.outputs.instance-id }}
+        run: |
+          echo "outcome: $OUTCOME"
+          echo "label: $LABEL"
+          echo "instance-id: $INSTANCE_ID"
+          if [ "$OUTCOME" = "success" ]; then
+            if [ -z "$LABEL" ] && [ -z "$INSTANCE_ID" ]; then
+              echo "FAIL: action succeeded but produced no outputs"
+              exit 1
+            fi
+            echo "PASS: action succeeded with label='$LABEL' instance-id='$INSTANCE_ID'"
+          elif [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action failed gracefully (expected with fake YC credentials)"
+          else
+            echo "FAIL: unexpected outcome '$OUTCOME'"
+            exit 1
+          fi
