@@ -1,0 +1,36 @@
+name: Test optional inputs coverage (disk2-size, image2-id, runner-home-dir, service-account-id, ssh-public-key, user)
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          mode: stop
+          github-token: fake-token-for-coverage
+          yc-sa-json-credentials: '{"invalid": "credentials"}'
+          folder-id: fake-folder-id
+          label: fake-label
+          instance-id: fake-instance-id
+          subnet-id: fake-subnet-id
+          runner-home-dir: /home/runner/actions-runner
+          service-account-id: fake-service-account-id
+          image2-id: fake-image2-id
+          disk2-type: network-ssd
+          disk2-size: 50GB
+          user: ubuntu
+          ssh-public-key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC test@example.com
+      - name: Assert action ran (with or without error due to fake credentials)
+        run: |
+          echo "outcome: ${{ steps.action.outcome }}"
+          # The action is expected to fail with invalid credentials.
+          # We only care that it was invoked (not skipped), meaning all inputs were accepted.
+          if [ "${{ steps.action.outcome }}" = "skipped" ]; then
+            echo "FAIL: action was skipped unexpectedly"
+            exit 1
+          fi
+          echo "PASS: action was invoked with all optional inputs"

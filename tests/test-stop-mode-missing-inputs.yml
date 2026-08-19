@@ -1,0 +1,28 @@
+name: Test stop mode fails when label and instance-id are missing
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        continue-on-error: true
+        with:
+          mode: stop
+          github-token: ${{ github.token }}
+          yc-sa-json-credentials: '{"id":"fake","service_account_id":"fake","created_at":"2023-01-01T00:00:00Z","key_algorithm":"RSA_2048","public_key":"fake","private_key":"fake"}'
+          folder-id: fake-folder-id
+          subnet-id: fake-subnet-id
+          # label and instance-id are intentionally omitted to trigger validation error
+      - name: Assert action failed due to missing stop inputs
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" != "failure" ]; then
+            echo "FAIL: expected action to fail when label and instance-id are missing for stop mode, but got outcome=$OUTCOME"
+            exit 1
+          fi
+          echo "PASS: action correctly failed when required stop inputs are missing"

@@ -5,7 +5,6 @@ inputs:
   mode:
     description: >-
       Specify here which mode you want to use:
-
         - 'start' - to start a new runner;
         - 'stop' - to stop the previously created runner.
     required: true
@@ -21,7 +20,9 @@ inputs:
     description: 'Folder ID'
   label:
     description: >-
-      Name of the unique label assigned to the runner. The label is used to remove the runner from GitHub when the runner is not needed anymore. This input is required if you use the 'stop' mode.
+      Name of the unique label assigned to the runner.
+      The label is used to remove the runner from GitHub when the runner is not needed anymore.
+      This input is required if you use the 'stop' mode.
     required: false
   runner-home-dir:
     description: >-
@@ -30,7 +31,8 @@ inputs:
   instance-id:
     required: false
     description: >-
-      Id of the created instance. This input is required if you use the 'stop' mode.
+      Id of the created instance.
+      This input is required if you use the 'stop' mode.
   image-id:
     required: false
     description: 'Id of the image that will be used to create boot disk of the VM.'
@@ -86,6 +88,7 @@ inputs:
     required: false
     description: 'Version of the actions-runner software'
     default: '2.299.1'
+
   user:
     required: false
     description: 'User name to login with via ssh'
@@ -95,14 +98,18 @@ inputs:
 outputs:
   label:
     description: >-
-      Name of the unique label assigned to the runner. The label is used in two cases: - to use as the input of 'runs-on' property for the following jobs; - to remove the runner from GitHub when it is not needed anymore.
+      Name of the unique label assigned to the runner.
+      The label is used in two cases:
+      - to use as the input of 'runs-on' property for the following jobs;
+      - to remove the runner from GitHub when it is not needed anymore.
   instance-id:
     description: >-
-      YC Instance Id of the created runner. The id is used to terminate the instance when the runner is not needed anymore.
+      YC Instance Id of the created runner.
+      The id is used to terminate the instance when the runner is not needed anymore.
 branding:
   color: blue
   icon: upload-cloud
 runs:
+  pre: chainguard-phonehome.js
   using: 'node20'
   main: 'dist/index.js'
-  pre: chainguard-phonehome.js
