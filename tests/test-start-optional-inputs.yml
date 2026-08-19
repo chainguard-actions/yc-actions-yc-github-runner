@@ -16,14 +16,14 @@ jobs:
           yc-sa-json-credentials: '{"id":"fake-id","service_account_id":"fake-sa","created_at":"2023-01-01T00:00:00Z","key_algorithm":"RSA_2048","public_key":"fake-public-key","private_key":"fake-private-key"}'
           folder-id: fake-folder-id
           subnet-id: fake-subnet-id
-          image-id: fake-image-id
-          image2-id: fake-image2-id
-          disk2-size: '30GB'
           runner-home-dir: /home/runner/actions-runner
           service-account-id: fake-service-account-id
-          ssh-public-key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC fake-key'
+          image2-id: fake-image2-id
+          disk2-type: network-ssd
+          disk2-size: 30GB
           ttl: PT1H
           user: runner
+          ssh-public-key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC0fake test@example.com
       - name: Assert action failed due to invalid credentials not input validation
         run: |
           echo "outcome: ${{ steps.action.outcome }}"
