@@ -4,8 +4,13 @@
   "version": "v1.7.0",
   "commit_sha": "b174ae680feb5c50fef3d211e4663170038a6383",
   "url": "https://github.com/yc-actions/yc-github-runner",
-  "policy_sha": "d636be7e43ef829af6e853da6b3c7566db9f72fe",
+  "policy_sha": "374911c4be584df24e6da57af2d990570ef0f859",
   "test_policy_sha": "843adf9e4b8f85d0c08b27b9d0b09dd094b54702",
   "test_agent_version": "2",
-  "harden_agent_version": "2"
+  "harden_agent_version": "2",
+  "dist_artifact": {
+    "gcs_uri": "gs://patch-actions-node-artifacts/dist-artifacts/yc-actions/yc-github-runner/v1.7.0/sha256-548268890962fef665c77fa8be3fc8349d8b0e317c89ca8c82c2511d6265e631.tar.gz",
+    "sha256": "548268890962fef665c77fa8be3fc8349d8b0e317c89ca8c82c2511d6265e631",
+    "size_bytes": 4992850
+  }
 }
